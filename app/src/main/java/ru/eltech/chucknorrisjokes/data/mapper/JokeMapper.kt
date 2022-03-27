@@ -1,7 +1,7 @@
 package ru.eltech.chucknorrisjokes.data.mapper
 
 import ru.eltech.chucknorrisjokes.data.network.model.JokeItemDto
-import ru.eltech.chucknorrisjokes.domain.JokeEntity
+import ru.eltech.chucknorrisjokes.domain.entities.JokeEntity
 import javax.inject.Inject
 
 class JokeMapper @Inject constructor() {

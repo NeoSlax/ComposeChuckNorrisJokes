@@ -4,8 +4,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import ru.eltech.chucknorrisjokes.data.mapper.JokeMapper
 import ru.eltech.chucknorrisjokes.data.network.ApiService
-import ru.eltech.chucknorrisjokes.domain.JokeEntity
-import ru.eltech.chucknorrisjokes.domain.JokesRepository
+import ru.eltech.chucknorrisjokes.domain.entities.JokeEntity
+import ru.eltech.chucknorrisjokes.domain.repository.JokesRepository
 import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(

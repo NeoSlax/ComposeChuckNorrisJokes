@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import ru.eltech.chucknorrisjokes.domain.JokeEntity
-import ru.eltech.chucknorrisjokes.domain.LoadJokesUseCase
+import ru.eltech.chucknorrisjokes.domain.entities.JokeEntity
+import ru.eltech.chucknorrisjokes.domain.usecases.LoadJokesUseCase
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(

@@ -1,10 +1,9 @@
 package ru.eltech.chucknorrisjokes.di
 
 import dagger.Binds
-import dagger.BindsInstance
 import dagger.Module
 import ru.eltech.chucknorrisjokes.data.repository.RepositoryImpl
-import ru.eltech.chucknorrisjokes.domain.JokesRepository
+import ru.eltech.chucknorrisjokes.domain.repository.JokesRepository
 
 @Module
 interface DomainModule {

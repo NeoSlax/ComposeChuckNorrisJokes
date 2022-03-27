@@ -1,20 +1,23 @@
 package ru.eltech.chucknorrisjokes.presetation.theme
 
+import android.view.Window
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.toArgb
 
 private val DarkColorPalette = darkColors(
-    primary = Purple200,
-    primaryVariant = Purple700,
+    primary = Black,
+    primaryVariant = Black,
     secondary = Teal200
 )
 
 private val LightColorPalette = lightColors(
-    primary = Purple500,
-    primaryVariant = Purple700,
+    primary = Black,
+    primaryVariant = Black,
     secondary = Teal200
 
     /* Other default colors to override
@@ -28,10 +31,12 @@ private val LightColorPalette = lightColors(
 )
 
 @Composable
-fun ChuckNorrisJokesTheme(
+fun ComponentActivity.ChuckNorrisJokesTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    window: Window = this.window,
     content: @Composable () -> Unit
 ) {
+    window.statusBarColor = Black.toArgb()
     val colors = if (darkTheme) {
         DarkColorPalette
     } else {

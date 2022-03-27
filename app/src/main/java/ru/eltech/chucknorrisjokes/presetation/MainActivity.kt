@@ -1,26 +1,34 @@
 package ru.eltech.chucknorrisjokes.presetation
 
+import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.view.ViewGroup
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Phone
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -28,8 +36,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import ru.eltech.chucknorrisjokes.R
 import ru.eltech.chucknorrisjokes.di.DaggerAppComponent
-import ru.eltech.chucknorrisjokes.domain.JokeEntity
+import ru.eltech.chucknorrisjokes.domain.entities.JokeEntity
 import ru.eltech.chucknorrisjokes.presetation.theme.ChuckNorrisJokesTheme
 import javax.inject.Inject
 
@@ -50,22 +59,19 @@ class MainActivity : ComponentActivity() {
         component.inject(this)
         super.onCreate(savedInstanceState)
         viewModel.jokeList
-        if (savedInstanceState == null) {
-            // viewModel.loadJokeList(100)
-        }
-
         setContent {
             ChuckNorrisJokesTheme {
+
                 // A surface container using the 'background' color from the theme
                 val items = listOf(
                     BottomNavBarItem(
-                        "Jokes",
-                        Icons.Default.Phone,
+                        getString(R.string.jokes),
+                        ImageVector.vectorResource(id = R.drawable.ic_joke),
                         "jokeList"
                     ),
                     BottomNavBarItem(
-                        "Web",
-                        Icons.Default.Phone,
+                        getString(R.string.web),
+                        ImageVector.vectorResource(id = R.drawable.ic_web),
                         "webScreen"
                     )
                 )
@@ -78,8 +84,10 @@ class MainActivity : ComponentActivity() {
                             popUpTo(0)
                         }
                     })
-                }) {
-                    Navigation(navController = navController, viewModel)
+                }) { innerPadding ->
+                    Box(modifier = Modifier.padding(innerPadding)) {
+                        Navigation(navController = navController, viewModel)
+                    }
                 }
             }
         }
@@ -134,19 +142,6 @@ fun BottomNavBar(
 }
 
 @Composable
-fun Greeting(name: String) {
-
-    Text(text = "Hello $name!")
-}
-
-@Composable
-fun DefaultPreview() {
-    ChuckNorrisJokesTheme {
-        Greeting("Android")
-    }
-}
-
-@Composable
 fun Navigation(navController: NavHostController, viewModel: MainViewModel) {
     NavHost(navController = navController, startDestination = "jokeList") {
         composable("jokeList") {
@@ -175,17 +170,18 @@ fun JokeScreen(viewModel: MainViewModel) {
 @Composable
 fun LoadScreen(viewModel: MainViewModel) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        var number = remember {
-            mutableStateOf("")
+        val number = remember {
+            mutableStateOf("1")
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             TextField(
                 value = number.value,
                 label = {
-                        Text(text = "Count")
+                    Text(text = "Count")
                 },
                 onValueChange = {
-                    number.value = it },
+                    number.value = it
+                },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
 
@@ -230,8 +226,6 @@ fun JokeColumn(jokes: List<JokeEntity>) {
                             )
                         }
                     }
-
-
                 }
                 Divider(
                     color = Color.Gray,
@@ -247,12 +241,39 @@ fun JokeColumn(jokes: List<JokeEntity>) {
     }
 }
 
+@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun WebScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "WebScreen")
+    val backEnabled = remember { mutableStateOf(false) }
+    val urlState = rememberSaveable {
+        mutableStateOf("https://www.icndb.com/api/")
     }
+    var webView: WebView? = null
+
+    AndroidView(
+        factory = { context ->
+            WebView(context).apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+                webViewClient = object : WebViewClient() {
+                    override fun onPageStarted(view: WebView, url: String?, favicon: Bitmap?) {
+                        backEnabled.value = view.canGoBack()
+                        urlState.value = url ?: "https://www.icndb.com/api/"
+                    }
+
+                }
+                settings.javaScriptEnabled = true
+
+                loadUrl(urlState.value)
+
+            }
+        }, update = {
+            webView = it
+        })
+    BackHandler(enabled = backEnabled.value) {
+        webView?.goBack()
+    }
+
 }

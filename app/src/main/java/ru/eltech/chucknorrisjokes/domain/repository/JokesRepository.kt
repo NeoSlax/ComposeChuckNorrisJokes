@@ -1,6 +1,7 @@
-package ru.eltech.chucknorrisjokes.domain
+package ru.eltech.chucknorrisjokes.domain.repository
 
 import kotlinx.coroutines.flow.Flow
+import ru.eltech.chucknorrisjokes.domain.entities.JokeEntity
 
 interface JokesRepository {
 

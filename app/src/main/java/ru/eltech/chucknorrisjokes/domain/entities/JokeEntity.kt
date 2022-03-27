@@ -1,4 +1,4 @@
-package ru.eltech.chucknorrisjokes.domain
+package ru.eltech.chucknorrisjokes.domain.entities
 
 data class JokeEntity(
     val id: Int,
